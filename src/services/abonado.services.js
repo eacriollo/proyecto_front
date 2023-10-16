@@ -2,9 +2,9 @@ import { funHttp } from "./Http"
 
 export default {
 
-   funListar(page=1, q="") {
+   funListar(page=1, limit=10, q="") {
 
-      return funHttp().get(`/abonado?page=${page}&q=${q}`);
+      return funHttp().get(`/abonado?page=${page}&limit=${limit}&q=${q}`);
 
    },
 

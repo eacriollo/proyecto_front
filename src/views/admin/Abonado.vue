@@ -19,7 +19,8 @@
             </template>
         </Toolbar>
 
-        <DataTable ref="dt" :value="abonados" :totalRecords="totalRecords" dataKey="id" :paginator="true" :rows="10"
+        <DataTable ref="dt" :value="abonados" :totalRecords="totalRecords" dataKey="id" lazy :loading='loading'
+            @page="onPage($event)" :paginator="true" :rows="10"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[5, 10, 25]"
             currentPageReportTemplate="Mostrando {first} to {last} of {totalRecords} abonados" responsiveLayout="scroll">
@@ -28,7 +29,7 @@
                     <h5 class="m-0">Gestion abonados</h5>
                     <span class="block mt-2 md:mt-0 p-input-icon-left">
                         <i class="pi pi-search" />
-                        <InputText placeholder="Search..." />
+                        <InputText placeholder="Buscar.." v-model="buscar" @keypress.enter="buscador()" />
                     </span>
                 </div>
             </template>
@@ -68,6 +69,7 @@
         </DataTable>
 
         <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="ABONADO" :modal="true" class="p-fluid">
+            {{ product }}
             <!--img :src="'demo/images/product/' + product.image" :alt="product.image" v-if="product.image" width="150"
                 class="mt-0 mx-auto mb-5 block shadow-2" /-->
             <div class="field">
@@ -120,21 +122,35 @@ const product = ref({});
 const submitted = ref(false);
 const visible = ref(false);
 const deleteProductDialog = ref(false);
+const buscar = ref([])
+
+const loading = ref(false);
+const lazyParams = ref({ page: 0 });
 
 onMounted(() => {
     listarAbonado()
 
 })
 
+const onPage = (event) => {
+    lazyParams.value = event
+    listarAbonado()
+}
+
 async function listarAbonado() {
-    const { data } = await abonadoServices.funListar();
+    loading.value = true
+
+    let page = lazyParams.value.page + 1;
+    let limit = lazyParams.value.rows;
+    const { data } = await abonadoServices.funListar(page, limit, buscar.value);
+    loading.value = false
     abonados.value = data.data
     totalRecords.value = data.total
 
 }
 async function guardarAbonado() {
     submitted.value = true;
-    if (product.value.codigo && product.value.plan && product.value.nombre ) {
+    if (product.value.codigo && product.value.plan && product.value.nombre) {
 
         try {
 
@@ -142,7 +158,7 @@ async function guardarAbonado() {
 
                 await abonadoServices.funModificar(product.value, product.value.id)
                 listarAbonado()
-                
+
                 product.value = { codigo: '', plan: '', nombre: '' }
                 toast.add({ severity: 'success', summary: 'Abonado modificado', detail: 'Se ha modificado abonado', life: 3000 });
 
@@ -150,7 +166,7 @@ async function guardarAbonado() {
 
                 await abonadoServices.funGuardar(product.value)
                 listarAbonado()
-               
+
                 product.value = { codigo: '', plan: '', nombre: '' }
                 toast.add({ severity: 'success', summary: 'abonado guardado', detail: 'Se ha guardado abonado', life: 3000 });
 
@@ -165,36 +181,40 @@ async function guardarAbonado() {
     }
 
 
+}
+
+function editar(act) {
+
+    product.value = act;
+    productDialog.value = ref(true);
+
+}
+
+async function eliminar(id) {
+    if (confirm("Esta seguro de eliminar la actividad")) {
+        await abonadoServices.funliminar(id);
+        listarAbonado()
+        toast.add({ severity: 'success', summary: 'Actividad Eliminada', detail: 'Se ha eliminado actividad', life: 3000 });
     }
-
-    function editar(act) {
-
-        product.value = act;
-        productDialog.value = ref(true);
-
-    }
-
-    async function eliminar(id) {
-        if (confirm("Esta seguro de eliminar la actividad")) {
-            await abonadoServices.funliminar(id);
-            listarAbonado()
-            toast.add({ severity: 'success', summary: 'Actividad Eliminada', detail: 'Se ha eliminado actividad', life: 3000 });
-        }
-    }
+}
 
 
-    const openNew = () => {
-        product.value = {};
-        submitted.value = false;
-        productDialog.value = true;
-    };
+const openNew = () => {
+    product.value = {};
+    submitted.value = false;
+    productDialog.value = true;
+};
 
-    const exportCSV = () => {
-        dt.value.exportCSV();
-    };
-    const hideDialog = () => {
-        productDialog.value = false;
-        submitted.value = false;
-    };
+const exportCSV = () => {
+    dt.value.exportCSV();
+};
+const hideDialog = () => {
+    productDialog.value = false;
+    submitted.value = false;
+};
+
+const buscador = () => {
+    listarAbonado();
+};
 
 </script>
