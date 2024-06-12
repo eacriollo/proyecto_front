@@ -6,15 +6,13 @@
         <Toolbar class="mb-4">
             <template v-slot:start>
                 <div class="my-2">
-                    <Button label="NUEVO ABONADO" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />
-                    <Button label="Delete" icon="pi pi-trash" class="p-button-danger" @click="confirmDeleteSelected"
-                        :disabled="!selectedProducts || !selectedProducts.length" />
-                </div>
+                    <Button label="NUEVO ABONADO" icon="pi pi-plus" class="p-button-success mr-2" @click="openNew" />               
+                  </div>
             </template>
 
             <template v-slot:end>
-                <FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import"
-                    class="mr-2 inline-block" />
+                <!--FileUpload mode="basic" accept="image/*" :maxFileSize="1000000" label="Import" chooseLabel="Import"
+                    class="mr-2 inline-block" /-->
                 <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportCSV($event)" />
             </template>
         </Toolbar>
@@ -23,7 +21,7 @@
             @page="onPage($event)" :paginator="true" :rows="10"
             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
             :rowsPerPageOptions="[5, 10, 25]"
-            currentPageReportTemplate="Mostrando {first} to {last} of {totalRecords} abonados" responsiveLayout="scroll">
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} abonados" responsiveLayout="scroll">
             <template #header>
                 <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                     <h5 class="m-0">Gestion abonados</h5>
@@ -35,13 +33,13 @@
             </template>
             <Column field="id" header="ID" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
-                    <span class="p-column-title">Name</span>
+                    <span class="p-column-title">ID</span>
                     {{ slotProps.data.id }}
                 </template>
             </Column>
-            <Column field="codigo" header="Codigo" :sortable="true" headerStyle="width:14%; min-width:10rem;">
+            <Column field="codigo" header="CODIGO" :sortable="true" headerStyle="width:14%; min-width:10rem;">
                 <template #body="slotProps">
-                    <span class="p-column-title">Codigo</span>
+                    <span class="p-column-title">CODIGO</span>
                     {{ slotProps.data.codigo }}
                 </template>
             </Column>
@@ -148,39 +146,27 @@ async function listarAbonado() {
     totalRecords.value = data.total
 
 }
+
 async function guardarAbonado() {
     submitted.value = true;
     if (product.value.codigo && product.value.plan && product.value.nombre) {
-
         try {
-
             if (product.value.id) {
-
                 await abonadoServices.funModificar(product.value, product.value.id)
                 listarAbonado()
-
                 product.value = { codigo: '', plan: '', nombre: '' }
                 toast.add({ severity: 'success', summary: 'Abonado modificado', detail: 'Se ha modificado abonado', life: 3000 });
-
             } else {
-
                 await abonadoServices.funGuardar(product.value)
                 listarAbonado()
-
                 product.value = { codigo: '', plan: '', nombre: '' }
                 toast.add({ severity: 'success', summary: 'abonado guardado', detail: 'Se ha guardado abonado', life: 3000 });
-
-
             }
-
             productDialog.value = false;
         } catch (error) {
             alert(error)
         }
-
     }
-
-
 }
 
 function editar(act) {
@@ -193,8 +179,10 @@ function editar(act) {
 async function eliminar(id) {
     if (confirm("Esta seguro de eliminar la actividad")) {
         await abonadoServices.funliminar(id);
+        
         listarAbonado()
         toast.add({ severity: 'success', summary: 'Actividad Eliminada', detail: 'Se ha eliminado actividad', life: 3000 });
+
     }
 }
 

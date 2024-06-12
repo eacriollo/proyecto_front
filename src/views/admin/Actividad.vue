@@ -1,6 +1,5 @@
 <template>
     <div class="card">
-
         <h2>GESTION TIPO DE ACTIVIDADES</h2>
 
         <Button label="Nueva actividad" icon="pi pi-external-link" @click="visible = true" />
@@ -12,7 +11,6 @@
             
             <Button label="Guardar" :style="{ width: '10vw' }" icon="pi pi-save" @click="guardarActividad()" />
         </Dialog>
-
 
         <DataTable :value="actividad" tableStyle="min-width: 50rem">
             <Column field="id" header="id"></Column>
@@ -28,17 +26,12 @@
 
                 </template>
             </Column>
-
-
         </DataTable>
-
         <Toast />
-
     </div>
 </template>
 
 <script setup>
-
 import { ref, onMounted } from "vue";
 import actividadSevice from "../../services/actividad.services.js"
 import { useToast } from "primevue/usetoast";
@@ -50,7 +43,6 @@ const tipoActi = ref({ tipo: '' })
 const visible = ref(false);
 
 //metodos
-
 onMounted(() => {
 
     getActividad()
@@ -84,14 +76,10 @@ async function guardarActividad() {
             tipoActi.value = { tipo: '' }
             toast.add({ severity: 'success', summary: 'Actividad Guardada', detail: 'Se ha guardado la actividad', life: 3000 });
 
-
         }
     } catch (error) {
         alert(error)
     }
-
-
-
 
 }
 

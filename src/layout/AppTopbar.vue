@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useRouter } from 'vue-router';
-
+import salir from '../services/auth.services.js';
 const { layoutConfig, onMenuToggle } = useLayout();
 
 const outsideClickListener = ref(null);
@@ -12,6 +12,10 @@ const router = useRouter();
 onMounted(() => {
     bindOutsideClickListener();
 });
+
+async function Salir(){
+    const logout = await salir.funSalir();
+}
 
 onBeforeUnmount(() => {
     unbindOutsideClickListener();
@@ -76,16 +80,19 @@ const isOutsideClicked = (event) => {
         </button>
 
         <div class="layout-topbar-menu" :class="topbarMenuClasses">
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-calendar"></i>
-                <span>Calendar</span>
-            </button>
-            <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
-                <i class="pi pi-user"></i>
-                <span>Profile</span>
-            </button>
-            <button @click="onSettingsClick()" class="p-link layout-topbar-button">
-                <i class="pi pi-cog"></i>
+            <!--
+
+                <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+                    <i class="pi pi-calendar"></i>
+                    <span>Calendar</span>
+                </button>
+                <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+                    <i class="pi pi-user"></i>
+                    <span>Profile</span>
+                </button>
+            -->
+            <button @click="Salir()" class="p-link layout-topbar-button">
+                <i class="pi pi-sign-out"></i>
                 <span>Settings</span>
             </button>
         </div>

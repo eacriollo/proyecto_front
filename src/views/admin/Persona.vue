@@ -2,7 +2,7 @@
     <div class="card">
 
         <h2>GESTION PERSONAS</h2>
-
+          
         <Button label="Nueva persona" icon="pi pi-external-link" @click="visible = true" />
         <Dialog v-model:visible="visible" modal header="Personas" :style="{ width: '50vw' }" class="p-fluid">
             <label for="">Ingresar nombre</label>
@@ -15,7 +15,6 @@
             <br>
             <Button label="Guardar" :style="{ width: '10vw' }" icon="pi pi-save" @click="guardarPersona()" />
         </Dialog>
-
 
         <DataTable :value="persona" tableStyle="min-width: 50rem">
             <Column field="id" header="id"></Column>
@@ -32,12 +31,8 @@
 
                 </template>
             </Column>
-
-
         </DataTable>
-
         <Toast />
-
     </div>
 </template>
 
@@ -93,10 +88,6 @@ async function guardarPersona() {
     } catch (error) {
         alert(error)
     }
-
-
-
-
 }
 
 function editar(act) {

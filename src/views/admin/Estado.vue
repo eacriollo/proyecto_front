@@ -2,7 +2,6 @@
     <div class="card">
 
         <h2>Estado de equipos</h2>
-
         <Button label="Estado de equipos" icon="pi pi-external-link" @click="visible = true" />
         <Dialog v-model:visible="visible" modal header="Estado" :style="{ width: '50vw' }" class="p-fluid">
             <label for="">Estado de equipos</label>
@@ -12,7 +11,6 @@
             
             <Button label="Guardar" :style="{ width: '10vw' }" icon="pi pi-save" @click="guardarEstado()" />
         </Dialog>
-
 
         <DataTable :value="estado" tableStyle="min-width: 50rem">
             <Column field="id" header="id"></Column>
@@ -28,10 +26,7 @@
 
                 </template>
             </Column>
-
-
         </DataTable>
-
         <Toast />
 
     </div>
@@ -61,11 +56,9 @@ async function getEstado() {
     const datos = await estadoSevice.funListar();
 
     estado.value = datos.data
-
 }
 
 async function guardarEstado() {
-
     try {
 
         if (est.value.id) {
@@ -75,7 +68,6 @@ async function guardarEstado() {
             visible.value = false
             est.value = { estado: '' }
             toast.add({ severity: 'success', summary: 'Estado Modificado', detail: 'Se ha modificado el estado', life: 3000 });
-
         } else {
 
             await estadoSevice.funGuardar(est.value)
@@ -83,15 +75,10 @@ async function guardarEstado() {
             visible.value = false
             est.value = { estado: '' }
             toast.add({ severity: 'success', summary: 'Estado Guardado', detail: 'Se ha guardado el estado', life: 3000 });
-
-
         }
     } catch (error) {
         alert(error)
     }
-
-
-
 
 }
 

@@ -1,18 +1,17 @@
 <template>
     <div class="card">
-
         <h2>GESTION CIUDADES</h2>
 
-        <Button label="Nueva actividad" icon="pi pi-external-link" @click="visible = true" />
+        
+
+        <Button label="Nueva Ciudad" icon="pi pi-external-link" @click="visible = true" />
         <Dialog v-model:visible="visible" modal header="Ciudad" :style="{ width: '50vw' }" class="p-fluid">
             <label for="">Ingresar ciudad</label>
             <InputText type="text" v-model="ciudad.nombre" />
             <br>
-            <br>
-            
+            <br>         
             <Button label="Guardar" :style="{ width: '10vw'}" icon="pi pi-save" @click="guardarCiudad()" />
         </Dialog>
-
 
         <DataTable :value="ciudades" tableStyle="min-width: 50rem">
             <Column field="id" header="id"></Column>
@@ -28,12 +27,8 @@
 
                 </template>
             </Column>
-
-
         </DataTable>
-
         <Toast />
-
     </div>
 </template>
 

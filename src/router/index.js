@@ -10,7 +10,10 @@ import Estado from '@/views/admin/Estado.vue';
 import Producto from '@/views/admin/Producto.vue';
 import Equipo from '@/views/admin/Equipos.vue';
 import Abonado from '@/views/admin/Abonado.vue';
-
+import Actas from '@/views/admin/Actas.vue';
+import Ordenes from '@/views/admin/Ordenes.vue';
+import RegistroEquipos from '@/views/admin/RegistroEquipos.vue';
+import Reportes from '@/views/admin/Reportes.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +50,20 @@ const router = createRouter({
           path: 'actividad',
           name: 'Actividad',
           component: Actividad,
+          meta: { requireAuth: true }
+        },
+
+        {
+          path: 'reportes',
+          name: 'reportes',
+          component: Reportes,
+          meta: { requireAuth: true }
+        },
+
+        {
+          path: 'actas',
+          name: 'actas',
+          component: Actas,
           meta: { requireAuth: true }
         },
 
@@ -93,6 +110,20 @@ const router = createRouter({
         },
 
         {
+          path: 'registroequipos',
+          name: 'RegistroEquipos',
+          component: RegistroEquipos,
+          meta: { requireAuth: true }
+        },
+
+        {
+          path: 'Ordenes',
+          name: 'Ordenes',
+          component: Ordenes,
+          meta: { requireAuth: true }
+        },
+
+        {
           path: 'abonado',
           name: 'Abonado',
           component: Abonado,
@@ -105,7 +136,7 @@ const router = createRouter({
   ]
 })
 
-//guard
+//guards
 
 router.beforeEach((to, from, next) => {
   let token = localStorage.getItem("access_token")

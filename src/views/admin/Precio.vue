@@ -1,8 +1,6 @@
 <template>
     <div class="card">
-
-        <h2>Precios ordenes</h2>
-
+        <h2>PRECIOS ORDENES</h2>
         <Button label="Nuevo precio" icon="pi pi-external-link" @click="visible = true" />
         <Dialog v-model:visible="visible" modal header="Valor actividad" :style="{ width: '50vw' }" class="p-fluid">
             <label for="">Ingresar valor</label>
@@ -13,27 +11,19 @@
             <Button label="Guardar" :style="{ width: '10vw' }" icon="pi pi-save" @click="guardarPrecio()" />
         </Dialog>
 
-
         <DataTable :value="precios" tableStyle="min-width: 50rem">
             <Column field="id" header="id"></Column>
             <Column field="precio" header="Valor"></Column>
             <Column header="Gestion">
-
-                <template #body="slotProps">
-                  
+                <template #body="slotProps">            
                     <Button icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2"
                     @click="editar(slotProps.data)" />
                     <Button icon="pi pi-trash" class="p-button-rounded p-button-warning mt-2"
                     @click="eliminar(slotProps.data.id)" />
-
                 </template>
             </Column>
-
-
         </DataTable>
-
         <Toast />
-
     </div>
 </template>
 
@@ -85,19 +75,13 @@ async function guardarPrecio() {
             prec.value = { precio: '' }
             toast.add({ severity: 'success', summary: 'Precio Guardado', detail: 'Se ha guardado', life: 3000 });
 
-
         }
     } catch (error) {
         alert(error)
     }
-
-
-
-
 }
 
 function editar(precio) {
-
     prec.value = precio;
     visible.value = true;
 

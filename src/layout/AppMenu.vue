@@ -7,19 +7,38 @@ const model = ref([
     {
         label: 'Inicio',
         items: [{ label: 'admin', icon: 'pi pi-fw pi-home', to: '/' },
+        { label: 'Reportes', icon: 'pi pi-fw pi-home', to: '/reportes' },
         { label: 'Perfil', icon: 'pi pi-fw pi-home', to: '/about' }]
     },
     {
         label: 'Ingreso de ordenes',
         items: [
+                      
+            { label: 'Actas', icon: 'pi pi-fw pi-id-card', to: 'Actas' },
+            { label: 'Ordenes', icon: 'pi pi-fw pi-id-card', to: 'Ordenes' },
+            { label: 'Abonado', icon: 'pi pi-fw pi-id-card', to: 'Abonado' },
+        
+    ]},
+
+    {
+        label: 'GESTION EQUIPOS',
+        items: [
+                      
+            { label: 'Registro', icon: 'pi pi-fw pi-id-card', to: 'RegistroEquipos' },
+            { label: 'Equipo', icon: 'pi pi-fw pi-id-card', to: 'Equipo' },
+            { label: 'Estado', icon: 'pi pi-fw pi-id-card', to: 'Estado' },
+            { label: 'Producto', icon: 'pi pi-fw pi-id-card', to: 'Producto' },
+        
+    ]},
+    {
+        label: 'DATOS DE INGRESO',
+        items: [
+
             { label: 'Actividad', icon: 'pi pi-fw pi-id-card', to: 'Actividad' },
             { label: 'Ciudad', icon: 'pi pi-fw pi-id-card', to: 'Ciudad' },
             { label: 'Precio', icon: 'pi pi-fw pi-id-card', to: 'Precio' },
             { label: 'Persona', icon: 'pi pi-fw pi-id-card', to: 'Persona' },
-            { label: 'Estado', icon: 'pi pi-fw pi-id-card', to: 'Estado' },
-            { label: 'Producto', icon: 'pi pi-fw pi-id-card', to: 'Producto' },
-            { label: 'Equipo', icon: 'pi pi-fw pi-id-card', to: 'Equipo' },
-            { label: 'Abonado', icon: 'pi pi-fw pi-id-card', to: 'Abonado' },
+           
     ]}
             /*
             { label: 'Input', icon: 'pi pi-fw pi-check-square', to: '/uikit/input' },
