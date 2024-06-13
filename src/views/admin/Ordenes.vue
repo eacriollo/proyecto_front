@@ -5,7 +5,7 @@
 
         <Toolbar class="mb-4">
             <template v-slot:end>
-                <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportXls($event)" />
+                <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="report()" />
             </template>
         </Toolbar>
 
@@ -106,7 +106,7 @@
                     optionValue="id" required="true" :class="{ 'p-invalid': submitted && !product.actividad_id }" />
                 <small class="p-invalid" v-if="submitted && !product.actividad_id">Valor requerido</small>
             </div>
-       
+
             <div class="field">
 
                 <label for="dropdown">Valor</label>
@@ -138,42 +138,37 @@
                     :class="{ 'p-invalid': submitted && !product.acta }" />
                 <small class="p-invalid" v-if="submitted && !product.acta">serie requerida.</small>
             </div>
-            <!--
-            <div class="field">
-                <label for="dropdown">Equipo</label>
-                <Dropdown id="dropdown" v-model="product.producto_id" :options="productos" optionLabel="nombre"
-                    optionValue="id" required="true" :class="{ 'p-invalid': submitted && !product.producto_id }" />
-                <small class="p-invalid" v-if="submitted && !product.producto_id">Actividad requerida</small>
-
-
-            </div>
-
-            <div class="field">
-                <label for="dropdown">Estado Equipo</label>
-
-                <Dropdown id="dropdown" v-model="product.estado_id" :options="estado" optionLabel="estado"
-                    optionValue="id" required="true" :class="{ 'p-invalid': submitted && !product.estado_id }" />
-                <small class="p-invalid" v-if="submitted && !product.estado_id">Actividad </small>
-
-
-            </div>
-
-
-            <div class="field">
-                <label for="inputtext">TECNICO</label>
-                <Dropdown id="dropdown" v-model="product.persona_id" :options="persona" optionLabel="nombre"
-                    optionValue="id" required="true" :class="{ 'p-invalid': submitted && !product.persona_id }" />
-                <small class="p-invalid" v-if="submitted && !product.persona_id">Tecnico requerido</small>
-
-
-            </div>
-
--->
-
-
+           
             <template #footer>
                 <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog" />
                 <Button label="Save" icon="pi pi-check" class="p-button-text" @click="actualizarOrden()" />
+            </template>
+
+        </Dialog>
+
+
+        <Dialog v-model:visible="reportDialog" :style="{ width: '450px' }" header="ORDEN" :modal="true" class="p-fluid">
+                        
+            <div class="field">
+
+                <label for="calendar">Fecha Inicial</label>
+                <Calendar id="calendar" v-model="fechas.fechaInicial" showIcon inputId="product.fecha"
+                    @input="onFechaSeleccionada" required="true"
+                    :class="{ 'p-invalid': submitted && !fechas.fechaInicial }" />
+                <small class="p-invalid" v-if="submitted && !fechas.fechaInicial">Fecha requerida</small>
+            </div>
+
+            <div class="field">
+
+                <label for="calendar">Fecha Final</label>
+                <Calendar id="calendar" v-model="fechas.fechaFinal" showIcon inputId="product.fecha"
+                    @input="onFechaSeleccionada" required="true"
+                    :class="{ 'p-invalid': submitted && !fechas.fechaFinal }" />
+                <small class="p-invalid" v-if="submitted && !fechas.fechaFinal">Fecha requerida</small>
+            </div>
+            <template #footer>
+                <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog2()" />
+                <Button label="Save" icon="pi pi-check" class="p-button-text" @click="ordenesReporte()" />
             </template>
 
         </Dialog>
@@ -183,7 +178,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import equipoServices from "./../../services/equipo.services.js";
+import ordenesReportes from "../../services/reportes.services.js";
 import productoSevice from "../../services/producto.services.js";
 import estadoSevice from "../../services/estado.services.js";
 import abonadoSevice from "../../services/abonado.services.js";
@@ -201,7 +196,9 @@ const ordenes = ref([]);
 const dt = ref(null);
 const totalRecords = ref(0)
 const productDialog = ref(false);
+const reportDialog = ref(false);
 const product = ref({});
+const fechas = ref({});
 const submitted = ref(false);
 const productos = ref()
 const estado = ref()
@@ -242,9 +239,9 @@ const buscador = () => {
 
 async function getActividad() {
 
-const datos = await actividadSevice.funListar();
+    const datos = await actividadSevice.funListar();
 
-actividad.value = datos.data
+    actividad.value = datos.data
 
 }
 
@@ -255,6 +252,18 @@ async function getPrecios() {
     precios.value = datos.data
 
 }
+
+async function ordenesReporte(){
+
+    let finicial = formatoFecha(fechas.value.fechaInicial).slice(0, 10)
+    console.log(finicial)
+    let ffinal = formatoFecha(fechas.value.fechaFinal).slice(0, 10)
+    const datos = await ordenesReportes.funReporteOrdenes(finicial, ffinal);
+    console.log(datos)
+    exportXls(datos)
+    hideDialog2()
+}
+
 async function listarProducto() {
     const { data } = await productoSevice.funListar();
     productos.value = data
@@ -278,7 +287,7 @@ async function listarPersona() {
 async function actualizarOrden() {
     submitted.value = true;
     if (product.value.precio_id && product.value.fecha && product.value.ticket && product.value.acta) {
-        formatoFecha()
+        product.value.fecha = formatoFecha(product.value.fecha)
         try {
             if (product.value.id) {
 
@@ -311,8 +320,17 @@ function editar(act) {
 
 }
 
+function report() {
+    reportDialog.value = ref(true);
+}
+
 const hideDialog = () => {
     productDialog.value = false;
+    submitted.value = false;
+};
+
+const hideDialog2 = () => {
+    reportDialog.value = false
     submitted.value = false;
 };
 
@@ -327,34 +345,19 @@ async function eliminar(id) {
 }
 
 
-const exportXls = () =>{
+const exportXls = (datos) => {
 
-const data = dt.value.value;
-
-
-const data2 = data.map(orden =>({
-    id: orden.id,
-    actividad: orden.actividad.tipo,
-    precio: orden.precio.precio,
-    fecha: orden.fecha,
-    codigo: orden.abonado.codigo,
-    nombre: orden.abonado.nombre,
-    plan: orden.abonado.plan,
-    ticket: orden.ticket,
-    acta: orden.acta
-}));
-
-const archivo = utils.json_to_sheet(data2);
-const libro = utils.book_new();
-utils.book_append_sheet(libro, archivo, 'reporteEquipos')
-writeFile(libro, 'ordenes.xlsx')
+    const archivo = utils.json_to_sheet(datos.data);
+    const libro = utils.book_new();
+    utils.book_append_sheet(libro, archivo, 'reporteOrdenes')
+    writeFile(libro, 'ordenes.xlsx')
 }
 
 
 
-function formatoFecha() {
+function formatoFecha(fecha) {
 
-    const fechaOriginal = product.value.fecha;
+    const fechaOriginal = fecha;
     console.log(fechaOriginal)
 
     if (fechaOriginal) {
@@ -365,8 +368,9 @@ function formatoFecha() {
         if (!isNaN(dateObject)) {
             // Si la creación del objeto Date fue exitosa, actualiza la propiedad datos._rawValue.fecha
             const fechaFormateada = dateObject.toISOString().slice(0, 19).replace("T", " ");
-            product.value.fecha = fechaFormateada;
-            console.log(product.value.fecha)
+            const fechaNueva = fechaFormateada;
+            return fechaNueva
+           // console.log(product.value.fecha)
         } else {
             console.error("La fecha en datos._rawValue.fecha no es válida");
         }
@@ -376,6 +380,7 @@ function formatoFecha() {
         console.error("La fecha en datos._rawValue.fecha es undefined");
     }
 
+    
 }
 
 

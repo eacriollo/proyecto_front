@@ -14,6 +14,9 @@ import Actas from '@/views/admin/Actas.vue';
 import Ordenes from '@/views/admin/Ordenes.vue';
 import RegistroEquipos from '@/views/admin/RegistroEquipos.vue';
 import Reportes from '@/views/admin/Reportes.vue';
+import ReportesTecnicos from '@/views/admin/ReportesTecnicos.vue';
+
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +60,13 @@ const router = createRouter({
           path: 'reportes',
           name: 'reportes',
           component: Reportes,
+          meta: { requireAuth: true }
+        },
+
+        {
+          path: 'reportesTecnicos',
+          name: 'reportesTecnicos',
+          component: ReportesTecnicos,
           meta: { requireAuth: true }
         },
 

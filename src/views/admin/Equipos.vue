@@ -5,7 +5,7 @@
 
         <Toolbar class="mb-4">
             <template v-slot:end>
-                <Button label="Export" icon="pi pi-upload" class="p-button-help" @click="exportXls($event)" />
+                <Button label="Export" icon="pi pi-upload" class="p-button-help"  @click="report()" />
             </template>
         </Toolbar>
 
@@ -134,11 +134,38 @@
 
         </Dialog>
 
+        <Dialog v-model:visible="reportDialog" :style="{ width: '450px' }" header="ORDEN" :modal="true" class="p-fluid">
+                        
+                        <div class="field">
+            
+                            <label for="calendar">Fecha Inicial</label>
+                            <Calendar id="calendar" v-model="fechas.fechaInicial" showIcon inputId="product.fecha"
+                                @input="onFechaSeleccionada" required="true"
+                                :class="{ 'p-invalid': submitted && !fechas.fechaInicial }" />
+                            <small class="p-invalid" v-if="submitted && !fechas.fechaInicial">Fecha requerida</small>
+                        </div>
+            
+                        <div class="field">
+            
+                            <label for="calendar">Fecha Final</label>
+                            <Calendar id="calendar" v-model="fechas.fechaFinal" showIcon inputId="product.fecha"
+                                @input="onFechaSeleccionada" required="true"
+                                :class="{ 'p-invalid': submitted && !fechas.fechaFinal }" />
+                            <small class="p-invalid" v-if="submitted && !fechas.fechaFinal">Fecha requerida</small>
+                        </div>
+                        <template #footer>
+                            <Button label="Cancel" icon="pi pi-times" class="p-button-text" @click="hideDialog2()" />
+                            <Button label="Save" icon="pi pi-check" class="p-button-text" @click="equiposReporte()" />
+                        </template>
+            
+                    </Dialog>
+
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
+import ordenesReportes from "../../services/reportes.services.js";
 import equipoServices from "./../../services/equipo.services.js";
 import productoSevice from "../../services/producto.services.js";
 import estadoSevice from "../../services/estado.services.js";
@@ -153,7 +180,9 @@ const equipos = ref([]);
 const dt = ref(null);
 const totalRecords = ref(0)
 const productDialog = ref(false);
+const reportDialog = ref(false);
 const product = ref({});
+const fechas = ref({});
 const submitted = ref(false);
 const productos = ref()
 const estado = ref()
@@ -212,6 +241,17 @@ async function listarPersona() {
     persona.value = data
 }
 
+async function equiposReporte(){
+
+let finicial = formatoFecha(fechas.value.fechaInicial).slice(0, 10)
+console.log(finicial)
+let ffinal = formatoFecha(fechas.value.fechaFinal).slice(0, 10)
+const datos = await ordenesReportes.funReporteEquipos(finicial, ffinal);
+console.log(datos)
+exportXls(datos)
+hideDialog2()
+}
+
 async function guardarEquipo() {
     submitted.value = true;
     if (product.value.producto_id && product.value.serie && product.value.estado_id && product.value.persona_id) {
@@ -248,11 +288,19 @@ function editar(act) {
 
 }
 
+function report() {
+reportDialog.value = ref(true);
+}
+
 const hideDialog = () => {
     productDialog.value = false;
     submitted.value = false;
 };
 
+const hideDialog2 = () => {
+    reportDialog.value = false
+    submitted.value = false;
+};
 
 
 async function eliminar(id) {
@@ -264,29 +312,41 @@ async function eliminar(id) {
 }
 
 
-const exportXls = () =>{
+const exportXls = (datos) =>{
 
-    const data = dt.value.value;
-    //console.log(data)
-
-    const data2 = data.map(equipo =>({
-        id: equipo.id,
-        serie: equipo.serie,
-        nombre: equipo.producto.nombre,
-        estado: equipo.estado.estado,
-        plan: equipo.abonado.plan,
-        codigo: equipo.abonado.codigo,
-        tecnico: equipo.persona.nombre,
-        fecha: equipo.updated_at
-    }));
-
-    const archivo = utils.json_to_sheet(data2);
+      const archivo = utils.json_to_sheet(datos.data);
     const libro = utils.book_new();
     utils.book_append_sheet(libro, archivo, 'reporteEquipos')
     writeFile(libro, 'equipos.xlsx')
 }
 
+function formatoFecha(fecha) {
 
+const fechaOriginal = fecha;
+console.log(fechaOriginal)
+
+if (fechaOriginal) {
+    // Verifica si la fecha original no es una instancia de Date
+
+    const dateObject = new Date(fechaOriginal);
+
+    if (!isNaN(dateObject)) {
+        // Si la creación del objeto Date fue exitosa, actualiza la propiedad datos._rawValue.fecha
+        const fechaFormateada = dateObject.toISOString().slice(0, 19).replace("T", " ");
+        const fechaNueva = fechaFormateada;
+        return fechaNueva
+       // console.log(product.value.fecha)
+    } else {
+        console.error("La fecha en datos._rawValue.fecha no es válida");
+    }
+
+
+} else {
+    console.error("La fecha en datos._rawValue.fecha es undefined");
+}
+
+
+}
 
 
 
